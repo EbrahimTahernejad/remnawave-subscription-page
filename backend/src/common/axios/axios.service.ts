@@ -281,6 +281,126 @@ export class AxiosService implements OnModuleInit {
         }
     }
 
+    public async getUserByShortUuid(
+        clientIp: string,
+        shortUuid: string,
+    ): Promise<ICommandResponse<{ uuid: string; hwidDeviceLimit: number }>> {
+        try {
+            const response = await this.axiosInstance.request<{
+                response: { uuid: string; hwidDeviceLimit: number };
+            }>({
+                method: 'GET',
+                url: `api/users/by-short-uuid/${shortUuid}`,
+                headers: {
+                    [REMNAWAVE_REAL_IP_HEADER]: clientIp,
+                },
+            });
+
+            return {
+                isOk: true,
+                response: response.data.response,
+            };
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                this.logger.error('Error in GetUserByShortUuid Request:', error.message);
+            } else {
+                this.logger.error('Error in GetUserByShortUuid Request:', error);
+            }
+
+            return { isOk: false };
+        }
+    }
+
+    public async getHwidDevices(userUuid: string): Promise<
+        ICommandResponse<{
+            devices: Array<{
+                hwid: string;
+                userUuid: string;
+                platform: string | null;
+                osVersion: string | null;
+                deviceModel: string | null;
+                userAgent: string | null;
+                createdAt: string;
+                updatedAt: string;
+            }>;
+            total: number;
+        }>
+    > {
+        try {
+            const response = await this.axiosInstance.request<{
+                response: {
+                    devices: Array<{
+                        hwid: string;
+                        userUuid: string;
+                        platform: string | null;
+                        osVersion: string | null;
+                        deviceModel: string | null;
+                        userAgent: string | null;
+                        createdAt: string;
+                        updatedAt: string;
+                    }>;
+                    total: number;
+                };
+            }>({
+                method: 'GET',
+                url: `api/hwid/devices/${userUuid}`,
+            });
+
+            return {
+                isOk: true,
+                response: response.data.response,
+            };
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                this.logger.error('Error in GetHwidDevices Request:', error.message);
+            } else {
+                this.logger.error('Error in GetHwidDevices Request:', error);
+            }
+
+            return { isOk: false };
+        }
+    }
+
+    public async deleteAllHwidDevices(userUuid: string): Promise<ICommandResponse<void>> {
+        try {
+            await this.axiosInstance.request({
+                method: 'POST',
+                url: 'api/hwid/devices/delete-all',
+                data: { userUuid },
+            });
+
+            return { isOk: true };
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                this.logger.error('Error in DeleteAllHwidDevices Request:', error.message);
+            } else {
+                this.logger.error('Error in DeleteAllHwidDevices Request:', error);
+            }
+
+            return { isOk: false };
+        }
+    }
+
+    public async deleteHwidDevice(userUuid: string, hwid: string): Promise<ICommandResponse<void>> {
+        try {
+            await this.axiosInstance.request({
+                method: 'POST',
+                url: 'api/hwid/devices/delete',
+                data: { userUuid, hwid },
+            });
+
+            return { isOk: true };
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                this.logger.error('Error in DeleteHwidDevice Request:', error.message);
+            } else {
+                this.logger.error('Error in DeleteHwidDevice Request:', error);
+            }
+
+            return { isOk: false };
+        }
+    }
+
     public async getSubscription(
         clientIp: string,
         shortUuid: string,

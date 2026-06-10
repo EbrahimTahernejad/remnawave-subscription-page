@@ -5,11 +5,12 @@ import { getJWTConfig } from '@common/config/jwt/jwt.config';
 
 import { SubpageConfigService } from './subpage-config.service';
 import { RootController } from './root.controller';
+import { HwidService } from './hwid.service';
 import { RootService } from './root.service';
 
 @Module({
     imports: [JwtModule.registerAsync(getJWTConfig())],
     controllers: [RootController],
-    providers: [RootService, SubpageConfigService],
+    providers: [RootService, SubpageConfigService, HwidService],
 })
 export class RootModule {}

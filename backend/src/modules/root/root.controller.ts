@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 
-import { Get, Controller, Res, Req, Param, Logger } from '@nestjs/common';
+import { Get, Post, Body, Controller, Res, Req, Param, Logger } from '@nestjs/common';
 
 import {
     REQUEST_TEMPLATE_TYPE_VALUES,
@@ -13,6 +13,7 @@ import { ClientIp } from '@common/decorators/get-ip';
 import { IJwtPayload } from '@common/constants';
 
 import { SubpageConfigService } from './subpage-config.service';
+import { HwidService } from './hwid.service';
 import { RootService } from './root.service';
 
 @Controller()
@@ -22,11 +23,43 @@ export class RootController {
     constructor(
         private readonly rootService: RootService,
         private readonly subpageConfigService: SubpageConfigService,
+        private readonly hwidService: HwidService,
     ) {}
 
     @Get(APP_CONFIG_ROUTE_WO_LEADING_PATH)
     async getSubscriptionPageConfig(@GetJWTPayload() user: IJwtPayload, @Req() request: Request) {
         return await this.subpageConfigService.getSubscriptionPageConfig(user.su, request);
+    }
+
+    @Get(':shortUuid/hwid')
+    async getHwidDevices(
+        @ClientIp() clientIp: string,
+        @Req() request: Request,
+        @Res() response: Response,
+        @Param('shortUuid') shortUuid: string,
+    ) {
+        return await this.hwidService.getDevices(clientIp, request, response, shortUuid);
+    }
+
+    @Post(':shortUuid/hwid/reset')
+    async resetHwidDevices(
+        @ClientIp() clientIp: string,
+        @Req() request: Request,
+        @Res() response: Response,
+        @Param('shortUuid') shortUuid: string,
+    ) {
+        return await this.hwidService.resetAll(clientIp, request, response, shortUuid);
+    }
+
+    @Post(':shortUuid/hwid/delete')
+    async deleteHwidDevice(
+        @ClientIp() clientIp: string,
+        @Req() request: Request,
+        @Res() response: Response,
+        @Param('shortUuid') shortUuid: string,
+        @Body() body: { hwid: string },
+    ) {
+        return await this.hwidService.deleteOne(clientIp, request, response, shortUuid, body.hwid);
     }
 
     @Get([':shortUuid', ':shortUuid/:clientType'])

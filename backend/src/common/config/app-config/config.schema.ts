@@ -35,6 +35,16 @@ export const configSchema = z
             .refine((val) => val === 'true' || val === 'false', 'Must be "true" or "false".'),
         INTERNAL_JWT_SECRET: z.string(),
         EGAMES_COOKIE: z.optional(z.string()),
+
+        ALLOW_DEVICE_RESET: z
+            .string()
+            .default('false')
+            .transform((val) => val === 'true'),
+        LIST_DEVICES: z
+            .string()
+            .default('true')
+            .transform((val) => val !== 'false'),
+        ALLOW_DEVICE_DELETE_INTERVAL: z.string().default('3d'),
     })
     .superRefine((data, ctx) => {
         if (
