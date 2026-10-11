@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 
-import { Body, Controller, Get, Param, Post, Req, Res } from '@nestjs/common';
+import { Controller, Get, Param, Post, Req, Res } from '@nestjs/common';
 
 import { ClientIp } from '@common/decorators/get-ip';
 
@@ -32,14 +32,16 @@ export class HwidController {
         return await this.hwidService.resetAll(clientIp, request, response, shortUuid);
     }
 
-    @Post('delete')
+    // hwid goes in the path: the global header filter strips content-length, so request
+    // bodies never reach the body parser.
+    @Post('delete/:hwid')
     async deleteDevice(
         @ClientIp() clientIp: string,
         @Req() request: Request,
         @Res() response: Response,
         @Param('shortUuid') shortUuid: string,
-        @Body() body: { hwid: string },
+        @Param('hwid') hwid: string,
     ) {
-        return await this.hwidService.deleteOne(clientIp, request, response, shortUuid, body?.hwid);
+        return await this.hwidService.deleteOne(clientIp, request, response, shortUuid, hwid);
     }
 }

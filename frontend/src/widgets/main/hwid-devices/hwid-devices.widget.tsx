@@ -122,9 +122,8 @@ export const HwidDevicesWidget = () => {
             onConfirm: async () => {
                 setActionLoading(true)
                 try {
-                    await ofetch(`/${shortUuid}/hwid/delete`, {
-                        method: 'POST',
-                        body: { hwid: device.hwid }
+                    await ofetch(`/${shortUuid}/hwid/delete/${encodeURIComponent(device.hwid)}`, {
+                        method: 'POST'
                     })
                     await fetchDevices()
                 } catch {
