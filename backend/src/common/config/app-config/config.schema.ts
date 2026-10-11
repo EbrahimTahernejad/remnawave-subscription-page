@@ -67,6 +67,10 @@ export const configSchema = z
         MARZBAN_LEGACY_DROP_REVOKED_SUBSCRIPTIONS: booleanString(),
         INTERNAL_JWT_SECRET: z.string(),
         EGAMES_COOKIE: z.optional(z.string()),
+
+        ALLOW_DEVICE_RESET: booleanString('false'),
+        LIST_DEVICES: booleanString('true'),
+        ALLOW_DEVICE_DELETE_INTERVAL: z.string().default('3d'),
     })
     .superRefine((data, ctx) => {
         if (

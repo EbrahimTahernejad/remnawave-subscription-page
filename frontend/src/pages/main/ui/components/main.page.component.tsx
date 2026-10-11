@@ -1,9 +1,9 @@
 import { Box, Center, Container, Group, Image, Stack, Title } from '@mantine/core'
 import { TSubscriptionPagePlatformKey } from '@remnawave/subscription-page-types'
-
 import {
     AccordionBlockRenderer,
     CardsBlockRenderer,
+    HwidDevicesWidget,
     InstallationGuideConnector,
     MinimalBlockRenderer,
     RawKeysWidget,
@@ -13,9 +13,11 @@ import {
     SubscriptionLinkWidget,
     TimelineBlockRenderer
 } from '@widgets/main'
-import { useAppConfig, useAppConfigStoreActions, useCurrentLang } from '@entities/app-config-store'
-import { LanguagePicker } from '@shared/ui/language-picker/language-picker.shared'
+
 import { Page, RemnawaveLogo } from '@shared/ui'
+import { LanguagePicker } from '@shared/ui/language-picker/language-picker.shared'
+
+import { useAppConfig, useAppConfigStoreActions, useCurrentLang } from '@entities/app-config-store'
 
 interface IMainPageComponentProps {
     isMobile: boolean
@@ -113,6 +115,8 @@ export const MainPageComponent = ({ isMobile, platform }: IMainPageComponentProp
                     {SubscriptionInfoBlockRenderer && (
                         <SubscriptionInfoBlockRenderer isMobile={isMobile} />
                     )}
+
+                    <HwidDevicesWidget />
 
                     {atLeastOnePlatformApp && (
                         <InstallationGuideConnector

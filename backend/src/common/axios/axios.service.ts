@@ -7,12 +7,16 @@ import { table } from 'table';
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 
 import {
+    DeleteAllUserHwidDevicesCommand,
+    DeleteUserHwidDeviceCommand,
     GetMetadataCommand,
     GetSubpageConfigByShortUuidCommand,
     GetSubscriptionInfoByShortUuidCommand,
     GetSubpageConfigCommand,
     GetSubpageConfigsCommand,
+    GetUserByShortUuidCommand,
     GetUserByUsernameCommand,
+    GetUserHwidDevicesCommand,
     REMNAWAVE_REAL_IP_HEADER,
     TRequestTemplateTypeKeys,
 } from '@remnawave/backend-contract';
@@ -274,6 +278,101 @@ export class AxiosService implements OnModuleInit {
             };
         } catch (error) {
             this.logger.error('Error in GetSubpageConfig Request:', error);
+            return { isOk: false };
+        }
+    }
+
+    public async getUserByShortUuid(
+        clientIp: string,
+        shortUuid: string,
+    ): Promise<ICommandResponse<GetUserByShortUuidCommand.Response['response']>> {
+        try {
+            const response = await this.axiosInstance.request<GetUserByShortUuidCommand.Response>({
+                method: GetUserByShortUuidCommand.endpointDetails.REQUEST_METHOD,
+                url: GetUserByShortUuidCommand.url(encodeURIComponent(shortUuid)),
+                headers: {
+                    [REMNAWAVE_REAL_IP_HEADER]: clientIp,
+                },
+            });
+
+            return {
+                isOk: true,
+                response: response.data.response,
+            };
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                this.logger.error('Error in GetUserByShortUuid Request:', error.message);
+            } else {
+                this.logger.error('Error in GetUserByShortUuid Request:', error);
+            }
+
+            return { isOk: false };
+        }
+    }
+
+    public async getUserHwidDevices(
+        userId: number,
+    ): Promise<ICommandResponse<GetUserHwidDevicesCommand.Response['response']>> {
+        try {
+            const response = await this.axiosInstance.request<GetUserHwidDevicesCommand.Response>({
+                method: GetUserHwidDevicesCommand.endpointDetails.REQUEST_METHOD,
+                url: GetUserHwidDevicesCommand.url(String(userId)),
+            });
+
+            return {
+                isOk: true,
+                response: response.data.response,
+            };
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                this.logger.error('Error in GetUserHwidDevices Request:', error.message);
+            } else {
+                this.logger.error('Error in GetUserHwidDevices Request:', error);
+            }
+
+            return { isOk: false };
+        }
+    }
+
+    public async deleteAllUserHwidDevices(userId: number): Promise<ICommandResponse<void>> {
+        try {
+            await this.axiosInstance.request({
+                method: DeleteAllUserHwidDevicesCommand.endpointDetails.REQUEST_METHOD,
+                url: DeleteAllUserHwidDevicesCommand.url,
+                data: { userId } satisfies DeleteAllUserHwidDevicesCommand.RequestBody,
+            });
+
+            return { isOk: true };
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                this.logger.error('Error in DeleteAllUserHwidDevices Request:', error.message);
+            } else {
+                this.logger.error('Error in DeleteAllUserHwidDevices Request:', error);
+            }
+
+            return { isOk: false };
+        }
+    }
+
+    public async deleteUserHwidDevice(
+        userId: number,
+        hwid: string,
+    ): Promise<ICommandResponse<void>> {
+        try {
+            await this.axiosInstance.request({
+                method: DeleteUserHwidDeviceCommand.endpointDetails.REQUEST_METHOD,
+                url: DeleteUserHwidDeviceCommand.url,
+                data: { userId, hwid } satisfies DeleteUserHwidDeviceCommand.RequestBody,
+            });
+
+            return { isOk: true };
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                this.logger.error('Error in DeleteUserHwidDevice Request:', error.message);
+            } else {
+                this.logger.error('Error in DeleteUserHwidDevice Request:', error);
+            }
+
             return { isOk: false };
         }
     }
